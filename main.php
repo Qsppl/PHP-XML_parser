@@ -25,23 +25,66 @@ class XML // каждый экземпляр класса представляе
 
     private $parent; // ссылка на родителя
 
-    private $childs = array(); // массив с потомками / ?массив с ссылками на потомков
+    private $childs = array(); // массив с ссылками на потомков
 
-    // переписываем служебные методы чтобы можно было нормально работать с объектом
-    public function __construct($data)
-    {
-        if (is_array($data)){ // объект получит либо 
-            
+
+    public function __construct($data){
+        // создание нового объекта XML может происходить в двух случаях:
+        // [1] кто-то создал объект XML и передал ему документ.xml new XML($document) <<< string $data
+        // [2] объект уже парсит документ, встретил xml-элемент и вызвал new XML(array($tag, $attributes)) <<< array $data
+        if (is_array($data)){ // [2]
+            $this->tagName = $data[0];
+            $this->attributes = $data[1];
+        } elseif (is_string($data)){ // [1]
+            $this->parse($data);
         }
     }
 
-    public function __toString()
-    {
+    public function __toString(){
         return;
     }
 
-    public function __get($name)
-    {
+    public function __get($name){
         return;
+    }
+
+    public function appendChild($element){ // добавлять дочерний элемент можно двумя способами, 
+                                                // передать (array($tag, $attributes)) или (&$xmlObject)
+        if (is_array($element)){
+            $newXmlObject = new XML($element);
+            
+            $tag = $element[0];
+            $this -> clilds[$tag][] = &$newXmlObject;
+
+            $newXmlObject->parent = &$this;
+
+            return $newXmlObject;
+        } elseif(is_object($element)){
+            $this -> clilds[$element->tagName][] = $element;
+            $element->parent = &$this;
+            return true;
+        };
+    }
+
+    private function parse($data){
+        $parser = xml_parser_create();
+        xml_set_object($parser, $this);
+        xml_set_element_handler($this->parser, "tag_open", "tag_close");
+        xml_set_character_data_handler($this->parser, "cdata");
+        
+        $this->pointer = &$this;
+        xml_parse($parser, $data);
+        xml_parser_free($parser);
+        unset($parser);
+    }
+    private function tag_open($parser, $tag, $attributes){
+        $newXmlObject = $this->pointer->appendChild($tag, $attributes);
+        $this->pointer = &$newXmlObject;
+    }
+    private function tag_close($parser, $tagName){
+        $this->pointer = $this->pointer->parent;
+    }
+    private function cdata($parser, $cdata){
+        $this->pointer->cdata = $cdata;
     }
 }
