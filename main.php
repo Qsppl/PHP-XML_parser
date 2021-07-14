@@ -12,6 +12,9 @@
 // модель структуры DOM[2] для удобства будет записана
 // в сами xml-элементы в виде ссылки на родителя и массива с потомками
 
+// чтение файла из потока и обработку файла сегментами скорее всего не нужно реализовывать для тестового задания
+// так же в тз не указано что нужно реализовать методы записи данных обратно в xml
+
 class XML // каждый экземпляр класса представляет собой один XmlElement, 
 {
     // СВОЙСТВА XML ЭЛЕМЕНТА
@@ -29,62 +32,62 @@ class XML // каждый экземпляр класса представляе
 
 
     public function __construct($data){
-        // создание нового объекта XML может происходить в двух случаях:
-        // [1] кто-то создал объект XML и передал ему документ.xml new XML($document) <<< string $data
-        // [2] объект уже парсит документ, встретил xml-элемент и вызвал new XML(array($tag, $attributes)) <<< array $data
-        if (is_array($data)){ // [2]
+        if( !((is_string($data)) or (is_array($data))) ){throw new Exception('TypeError');}; // перегрузки нет, объявления типов аргументов тоже. пишу костыль.
+
+        if (is_array($data)){ // [2] от парсера получен элемент и appendChild вызвал new XML(array($tag, $attributes)) <<< array $data
             $this->tagName = $data[0];
             $this->attributes = $data[1];
-        } elseif (is_string($data)){ // [1]
+        } elseif (is_string($data)){ // [1] инициализация парсинга документа new XML($document) <<< string $data
             $this->parse($data);
         }
     }
 
-    public function __toString(){
-        return;
+    // public function __toString(){
+    //     return;
+    // }
+
+    // public function __get($name){
+    //     return;
+    // }
+
+    public function appendChild(self $element){
+        $this -> clilds[$element->tagName][] = &$element;
+        $element->parent = &$this;
+        return true;
     }
 
-    public function __get($name){
-        return;
-    }
-
-    public function appendChild($element){ // добавлять дочерний элемент можно двумя способами, 
-                                                // передать (array($tag, $attributes)) или (&$xmlObject)
-        if (is_array($element)){
-            $newXmlObject = new XML($element);
-            
-            $tag = $element[0];
-            $this -> clilds[$tag][] = &$newXmlObject;
-
-            $newXmlObject->parent = &$this;
-
-            return $newXmlObject;
-        } elseif(is_object($element)){
-            $this -> clilds[$element->tagName][] = $element;
-            $element->parent = &$this;
-            return true;
-        };
-    }
-
-    private function parse($data){
+    private function parse(string $data){
+        // настройки парсера
         $parser = xml_parser_create();
         xml_set_object($parser, $this);
-        xml_set_element_handler($this->parser, "tag_open", "tag_close");
-        xml_set_character_data_handler($this->parser, "cdata");
+        xml_set_element_handler($parser, "tag_open", "tag_close");
+        xml_set_character_data_handler($parser, "cdata");
         
         $this->pointer = &$this;
+
+        // запускаем
         xml_parse($parser, $data);
         xml_parser_free($parser);
         unset($parser);
     }
-    private function tag_open($parser, $tag, $attributes){
-        $newXmlObject = $this->pointer->appendChild($tag, $attributes);
+    private function tag_open($parser, string $tagName, array $attributes){
+        $newXmlObject = new XML(array($tagName, $attributes));
+        
+        $this->pointer->appendChild($newXmlObject);
+
         $this->pointer = &$newXmlObject;
     }
-    private function tag_close($parser, $tagName){
+    private function tag_close($parser, string $tagName){
         $this->pointer = $this->pointer->parent;
     }
-    private function cdata($parser, $cdata){
+    private function cdata($parser, string $cdata){
         $this->pointer->cdata = $cdata;
     }
 }
+
+$document = file_get_contents('source/testfile.xml');
+$xmlstructure = new XML("<ЗначенияСвойства>
+<Ид>40a3098f-ed8f-11e8-af65-c6a3bfc032f2</Ид>
+<Значение>229f20f6-543e-11e9-8458-485b3977ac2a</Значение>
+</ЗначенияСвойства>");
+var_dump($xmlstructure);
