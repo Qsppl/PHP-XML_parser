@@ -18,7 +18,7 @@
 class XML // каждый экземпляр класса представляет собой один XmlElement, 
 {
     // СВОЙСТВА XML ЭЛЕМЕНТА
-    private $pointer;
+    private $pointer; // используется для построения dom во время парсинга
 
     private $tagName;
 
@@ -30,32 +30,30 @@ class XML // каждый экземпляр класса представляе
 
     private $childs = array(); // массив с ссылками на потомков
 
+    private $iterPos;
+
 
     public function __construct($data){
         if( !((is_string($data)) or (is_array($data))) ){throw new Exception('TypeError');}; // перегрузки нет, объявления типов аргументов тоже. пишу костыль.
 
-        if (is_array($data)){ // [2] от парсера получен элемент и appendChild вызвал new XML(array($tag, $attributes)) <<< array $data
+        if (is_array($data)){ // [2] от парсера получен элемент. new XML(array($tag, $attributes)) <<< array $data
             $this->tagName = $data[0];
             $this->attributes = $data[1];
-        } elseif (is_string($data)){ // [1] инициализация парсинга документа new XML($document) <<< string $data
+        } elseif (is_string($data)){ // [1] инициализация парсинга документа. new XML($document) <<< string $data
             $this->parse($data);
         }
     }
 
-    // public function __toString(){
-    //     return;
-    // }
-
-    // public function __get($name){
-    //     return;
-    // }
-
     public function appendChild(self $element){
-        $this -> clilds[$element->tagName][] = &$element;
+        $this -> childs[$element->tagName][] = &$element;
         $element->parent = &$this;
         return true;
     }
 
+    // интерфейсы
+    
+
+    // парсер
     private function parse(string $data){
         // настройки парсера
         $parser = xml_parser_create();
