@@ -122,6 +122,7 @@ class XML implements Countable, ArrayAccess, IteratorAggregate // каждый �
     private function parse(string $data){
         // настройки парсера
         $parser = xml_parser_create();
+        xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, false);
         xml_set_object($parser, $this);
         xml_set_element_handler($parser, "tag_open", "tag_close");
         xml_set_character_data_handler($parser, "cdata");
@@ -144,7 +145,13 @@ class XML implements Countable, ArrayAccess, IteratorAggregate // каждый �
         $this->pointer = $this->pointer->parent;
     }
     private function cdata($parser, string $cdata){
-        $this->pointer->cdata = $cdata;
+        if((boolean) trim($cdata)){
+            if (isset($this->pointer->cdata)){
+                $this->pointer->cdata = $this->pointer->cdata . $cdata;
+            } else {
+                $this->pointer->cdata = $cdata;
+            }
+        }
     }
 }
 
