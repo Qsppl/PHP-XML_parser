@@ -155,6 +155,15 @@ class XML implements Countable, ArrayAccess, IteratorAggregate // каждый �
     }
 }
 
-$document = file_get_contents('source/testfile.xml');
+$document = file_get_contents('source/import___bc236459-b687-474a-8555-427a5c7d44da.xml');
 $xmlstructure = new XML($document);
-var_dump($xmlstructure);
+print($xmlstructure->КоммерческаяИнформация->Каталог->Товары->Товар[0]->Ид); print("\n");
+
+print($xmlstructure->КоммерческаяИнформация->Каталог['СодержитТолькоИзменения']); print("\n");
+
+$catalog = $xmlstructure->КоммерческаяИнформация->Каталог;
+if ($catalog['СодержитТолькоИзменения'] == True) {
+    foreach( $catalog->Товары->Товар as $product) {
+        print($product->Наименование); print("\n");
+    }
+}
