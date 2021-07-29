@@ -1,7 +1,4 @@
 <?php
-// написать класс с реализацией методов по парсингу xml-файла с товарами 
-// в структуру данных любого вида - массив, массив объектов
-
 // в php есть встроенный парсер expat. Я думаю будет приемлимо написать 
 // интерфейс "XML" который используя expat создает удобную структуру данных на основе xml документа  
 
@@ -11,9 +8,19 @@
 
 // модель структуры DOM[2] для удобства будет записана
 // в сами xml-элементы в виде ссылки на родителя и массива с потомками
+// [2] https://docs.microsoft.com/ru-ru/dotnet/standard/data/xml/process-xml-data-using-the-dom-model
 
-// чтение файла из потока и обработку файла сегментами скорее всего не нужно реализовывать для тестового задания
-// так же в тз не указано что нужно реализовать методы записи данных обратно в xml
+spl_autoload_register(function ($class) {
+
+    // base directory for the namespace prefix
+    $base_dir = __DIR__ . '/src/Modules';
+    $file = $base_dir . str_replace('\\', '/', $class) . '.php';
+
+    // if the file exists, require it
+    if (file_exists($file)) {
+        require $file;
+    }
+});
 
 class XML implements Countable, ArrayAccess, IteratorAggregate // каждый экземпляр класса представляет собой один XmlElement, 
 {
