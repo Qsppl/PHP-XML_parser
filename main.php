@@ -18,7 +18,7 @@ $document = file_get_contents('src/Data/import___bc236459-b687-474a-8555-427a5c7
 
 $xmlstructure = new XmlElement($document);
 
-print($xmlstructure->КоммерческаяИнформация->Каталог->Товары->Товар[0]->Ид);
+print($xmlstructure);
 
 print("\n");
 

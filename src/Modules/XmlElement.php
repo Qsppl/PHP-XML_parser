@@ -12,7 +12,7 @@ class XmlElement implements \Countable, \ArrayAccess, \IteratorAggregate
 
     private $attributes = array();
 
-    private $cdata;
+    private $cData = null;
 
     private $parent; // ссылка на родителя
 
@@ -66,8 +66,12 @@ class XmlElement implements \Countable, \ArrayAccess, \IteratorAggregate
     }
 
     public function __toString(): string
-    { // если мы обращаемся к элементу как к строке, возвращает data <<< echo $element
-        return $this->cdata;
+    { // если мы обращаемся к элементу как к строке, возвращает data или null <<< echo $element
+        if ($this->cData == null) {
+            return 'null';
+        } else {
+            return $this->cData;
+        }
     }
 
     //ArrayAccess - если мы обращаемся к элементу как к массиву, он возвращает атрибуты
@@ -160,13 +164,13 @@ class XmlElement implements \Countable, \ArrayAccess, \IteratorAggregate
         $this->pointer = $this->pointer->parent;
     }
 
-    private function cData($parser, string $cdata)
+    private function cData($parser, string $cData)
     {
-        if ((bool) trim($cdata)) {
-            if (isset($this->pointer->cdata)) {
-                $this->pointer->cdata = $this->pointer->cdata . $cdata;
+        if ((bool) trim($cData)) {
+            if (isset($this->pointer->cData)) {
+                $this->pointer->cData = $this->pointer->cData . $cData;
             } else {
-                $this->pointer->cdata = $cdata;
+                $this->pointer->cData = $cData;
             }
         }
     }
