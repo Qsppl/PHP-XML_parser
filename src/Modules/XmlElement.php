@@ -110,8 +110,8 @@ class XmlElement implements Countable, ArrayAccess, IteratorAggregate{
         $parser = xml_parser_create();
         xml_parser_set_option($parser, XML_OPTION_CASE_FOLDING, false);
         xml_set_object($parser, $this);
-        xml_set_element_handler($parser, "tag_open", "tag_close");
-        xml_set_character_data_handler($parser, "cdata");
+        xml_set_element_handler($parser, "tagOpen", "tagClose");
+        xml_set_character_data_handler($parser, "cData");
         
         $this->pointer = &$this;
 
@@ -120,17 +120,17 @@ class XmlElement implements Countable, ArrayAccess, IteratorAggregate{
         xml_parser_free($parser);
         unset($parser);
     }
-    private function tag_open($parser, string $tagName, array $attributes){
+    private function tagOpen($parser, string $tagName, array $attributes){
         $newXmlObject = new XmlElement(array($tagName, $attributes));
         
         $this->pointer->appendChild($newXmlObject);
 
         $this->pointer = &$newXmlObject;
     }
-    private function tag_close($parser, string $tagName){
+    private function tagClose($parser, string $tagName){
         $this->pointer = $this->pointer->parent;
     }
-    private function cdata($parser, string $cdata){
+    private function cData($parser, string $cdata){
         if((boolean) trim($cdata)){
             if (isset($this->pointer->cdata)){
                 $this->pointer->cdata = $this->pointer->cdata . $cdata;
