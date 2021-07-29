@@ -22,10 +22,10 @@ spl_autoload_register(function ($class) {
     }
 });
 
-use Modules\XML_Element;
+use Modules\XmlElement;
 
 $document = file_get_contents('src/Data/import___bc236459-b687-474a-8555-427a5c7d44da.xml');
-$xmlstructure = new XML_Element($document);
+$xmlstructure = new XmlElement($document);
 print($xmlstructure->КоммерческаяИнформация->Каталог->Товары->Товар[0]->Ид); print("\n");
 
 print($xmlstructure->КоммерческаяИнформация->Каталог['СодержитТолькоИзменения']); print("\n");

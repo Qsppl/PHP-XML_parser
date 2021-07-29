@@ -3,7 +3,7 @@
 namespace Modules;
 use Countable, ArrayAccess, IteratorAggregate, Exception;
 
-class XML_Element implements Countable, ArrayAccess, IteratorAggregate{
+class XmlElement implements Countable, ArrayAccess, IteratorAggregate{
 
     private $pointer; // используется для построения dom во время парсинга
 
@@ -121,7 +121,7 @@ class XML_Element implements Countable, ArrayAccess, IteratorAggregate{
         unset($parser);
     }
     private function tag_open($parser, string $tagName, array $attributes){
-        $newXmlObject = new XML_Element(array($tagName, $attributes));
+        $newXmlObject = new XmlElement(array($tagName, $attributes));
         
         $this->pointer->appendChild($newXmlObject);
 
