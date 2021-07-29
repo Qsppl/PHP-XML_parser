@@ -1,6 +1,6 @@
 <?php
 
-namespace source\Modules;
+namespace Modules;
 use Countable, ArrayAccess, IteratorAggregate, Exception;
 
 class XML_Element implements Countable, ArrayAccess, IteratorAggregate{

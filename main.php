@@ -11,9 +11,9 @@
 // [2] https://docs.microsoft.com/ru-ru/dotnet/standard/data/xml/process-xml-data-using-the-dom-model
 
 spl_autoload_register(function ($class) {
-
+    
     // base directory for the namespace prefix
-    $base_dir = __DIR__ . '/src/Modules';
+    $base_dir = __DIR__ . '/src/';
     $file = $base_dir . str_replace('\\', '/', $class) . '.php';
 
     // if the file exists, require it
@@ -22,8 +22,10 @@ spl_autoload_register(function ($class) {
     }
 });
 
-$document = file_get_contents('source/import___bc236459-b687-474a-8555-427a5c7d44da.xml');
-$xmlstructure = new XML($document);
+use Modules\XML_Element;
+
+$document = file_get_contents('src/Data/import___bc236459-b687-474a-8555-427a5c7d44da.xml');
+$xmlstructure = new XML_Element($document);
 print($xmlstructure->КоммерческаяИнформация->Каталог->Товары->Товар[0]->Ид); print("\n");
 
 print($xmlstructure->КоммерческаяИнформация->Каталог['СодержитТолькоИзменения']); print("\n");
