@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules;
+namespace src;
 
 use FFI\Exception;
 
