@@ -58,7 +58,7 @@ class XmlElement implements \Countable, \ArrayAccess, \IteratorAggregate
             }
         } else {
             if (is_array($this->childs[$tagName])) {
-                return $this->childs[$tagName]; // иначе вернуть весь массив с потомками
+                return $this->childs[$tagName]; // иначе вернуть весь массив с $tagName потомками
             } else {
                 throw new Exception('typeError');
             }
@@ -111,16 +111,22 @@ class XmlElement implements \Countable, \ArrayAccess, \IteratorAggregate
         return count($this->parent->childs[$this->tagName]);
     }
 
-    //IteratorAggregate - при обращении к объекту как к иттерируемому <<< foreach $document->$ul->li
-    // __get() перегружен, возвращает array или XMLObject
-    // [010] мы хотим итерировать не сам объект, а все объекты с таким именем.
-    public function getIterator(): array
+    # целевая нода обращается к ноде-родителю и просит вернуть массив своих одноименных соседей,
+    # после возвращает этот массив на итерирование
+    public function getIterator(): \ArrayIterator
     {
+        # исключение - если мы попытались итерировать корневой элемент, возвращаем массив с ним
         if ($this->parent == null) {
-            return array($this);
-        } // если мы попытались итерировать корневой элемент, возвращаем массив с ним
+            return new \ArrayIterator(array($this));
+        }
 
-        return $this->parent->childs[$this->tagName]; // [010]
+        // родитель вернет XmlElement или [XmlElement, XmlElement, ...]
+        $something = &$this->parent->childs[$this->tagName];
+        if (is_array($something)) {
+            return new \ArrayIterator($something);
+        } else {
+            return new \ArrayIterator(array($something));
+        }
     }
 
     private function parse(string $data)
