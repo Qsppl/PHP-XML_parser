@@ -4,7 +4,7 @@
 
 1. Все дерево объектов и каждый отдельный узел- итерируемы, т.е. их можно перебрать обычным `foreach`
 
-`foreach( $catalog->Товары->Товар as $product) {`
+`foreach($catalog->Товары->Товар as $product) { }`
 
 2. Доступ к объектам осуществляется через оператор `->`
 
@@ -27,4 +27,4 @@
 Xml-файл доступен по ссылке 
 
 скрипт демонстрирующий работу класса находиться в main.php
-![Screenshot_5](https://user-images.githubusercontent.com/22717464/125829482-f083b8c7-cf39-45ac-94a9-264bfa005276.png)
+![image](https://user-images.githubusercontent.com/22717464/127752970-7d7532b6-2e95-42d5-ae11-466f34f04859.png)
